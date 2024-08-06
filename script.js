@@ -1,14 +1,16 @@
 const form = document.getElementById('form');
 const email = document.getElementById('email');
 const password = document.getElementById('psw');
+
 form.addEventListener('submit', function (e) {
-    e.preventDefault()
+    e.preventDefault();
+
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        "email": email.value,
-        "password": password.value
+        email: email.value,
+        password: password.value
     });
 
     const requestOptions = {
@@ -21,16 +23,15 @@ form.addEventListener('submit', function (e) {
     fetch("http://164.92.244.59:3000/admin/login", requestOptions)
         .then((response) => response.json())
         .then((result) => {
-            if (result != "Wrong Email Or Password...") {
-                alert("Login successful!"); 
+            if (result.token) {
+                localStorage.setItem("token", `MSP ${result.token}`);
+                alert("Login successful!");
                 window.location.href = "../Team/index.html";
-                localStorage.setItem("expecto Patronum", `MSP ${result["token"]}`);
+            } else {
+                alert("Wrong Email Or Password...");
+                email.style.borderColor = "red";
+                password.style.borderColor = "red";
             }
-            else {
-                email.style.cssText += "border-color:red;";
-                password.style.cssText += "border-color:red;";
-            }
-            // console.log(result);
         })
-        .catch((error) => console.error(error));
-})
+        .catch((error) => console.error('Error:', error));
+});
